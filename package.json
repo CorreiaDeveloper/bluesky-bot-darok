@@ -1,0 +1,16 @@
+{
+  "name": "galvao-bluesky-bot",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.13.5",
+    "@atproto/oauth-client": "^0.2.0",
+    "atproto-firehose": "^0.2.2"
+  }
+}
