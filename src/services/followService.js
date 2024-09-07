@@ -4,8 +4,8 @@ import { formatError } from '../utils/errorUtils.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const alwaysFollowThisUser = (process.env.BSKY_ALWAYS_FOLLOW_USER ?? '').split(',').map(user => user.trim());
-const neverFollowWithThisUser = (process.env.BSKY_NEVER_INTERACT_USER ?? '').split(',').map(user => user.trim());
+const alwaysFollowThisUser = (process.env.BSKY_ALWAYS_FOLLOW_USER ?? '').split(',').map(user => user.trim()).filter(user => user.length > 0);
+const neverFollowWithThisUser = (process.env.BSKY_NEVER_INTERACT_USER ?? '').split(',').map(user => user.trim()).filter(user => user.length > 0);
 const actorHandle = process.env.BSKY_HANDLE;
 
 export async function findAndHandleNonMutualFollows(initialFollowerCount, initialFollowingCount) {
@@ -93,18 +93,20 @@ export async function findAndHandleNonMutualFollows(initialFollowerCount, initia
         }
 
         // Seguir os usuários de alwaysFollowThisUser que eu não sigo
-        for (const handle of usersToFollow) {
-            try {
-                // Obter perfil do usuário para obter o DID
-                const { data } = await agent.getProfile({ actor: handle });
-                const userDid = data.did;
+        if (usersToFollow.length > 0) {
+            for (const handle of usersToFollow) {
+                try {
+                    // Obter perfil do usuário para obter o DID
+                    const { data } = await agent.getProfile({ actor: handle });
+                    const userDid = data.did;
 
-                if (userDid) {
-                    await retryRequest(() => agent.follow(userDid));
-                    console.log(`Seguindo ${handle}, pois está configurado para sempre ser seguido`);
+                    if (userDid) {
+                        await retryRequest(() => agent.follow(userDid));
+                        console.log(`Seguindo ${handle}, pois está configurado para sempre ser seguido`);
+                    }
+                } catch (error) {
+                    console.error(`Erro ao seguir ${handle}:`, formatError(error));
                 }
-            } catch (error) {
-                console.error(`Erro ao seguir ${handle}:`, formatError(error));
             }
         }
 
