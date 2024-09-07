@@ -1,27 +1,26 @@
 {
   "compilerOptions": {
-    // Enable latest features
     "lib": ["ESNext", "DOM"],
-    "target": "ESNext",
-    "module": "ESNext",
+    "module": "es2022",
+    "target": "es2017",
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
-
-    // Bundler mode
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
+    "noEmit": false, // Certifique-se de que isso está definido como false ou removido
 
     // Best practices
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
 
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["index.ts"] // Certifique-se de incluir seu arquivo TypeScript
 }
