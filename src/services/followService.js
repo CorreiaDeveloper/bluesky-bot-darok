@@ -8,16 +8,29 @@ const alwaysFollowThisUser = (process.env.BSKY_ALWAYS_FOLLOW_USER ?? '').split('
 const neverFollowWithThisUser = (process.env.BSKY_NEVER_INTERACT_USER ?? '').split(',').map(user => user.trim());
 const actorHandle = process.env.BSKY_HANDLE;
 
-export async function findAndHandleNonMutualFollows() {
+export async function findAndHandleNonMutualFollows(initialFollowerCount, initialFollowingCount) {
     try {
-
+        //Resgatando todos os seguidores
         const allFollowers = await getAllFollowers();
-        console.log(`\nTotal de seguidores atualizado: ${allFollowers.length}`);
         const followerDIDs = new Set(allFollowers.map(f => f.did));
 
+        //Resgatando todos os seguidos
         const allFollowing = await getAllFollowing();
-        console.log(`Total de contas seguidas atualizado: ${allFollowing.length}\n`);
         const followingDIDs = new Set(allFollowing.map(f => f.did));
+
+        //Contagem de seguidores e seguidos
+        const currentFollowingCount = allFollowing.length;
+        const currentFollowerCount = allFollowers.length;
+
+        if (initialFollowerCount !== currentFollowerCount) {
+            const followerDifference = currentFollowerCount - initialFollowerCount;
+            console.log(`Total de seguidores atual: ${currentFollowerCount} - Você ganhou ${followerDifference} seguidores desde o início!`);
+        }
+
+        if (initialFollowingCount !== currentFollowingCount) {
+            const followingDifference = currentFollowerCount - initialFollowingCount;
+            console.log(`Total de contas seguidas Atual: ${currentFollowingCount} - Total de contas seguidas: ${followingDifference} desde o início\n`);
+        }
 
         // Perfis que você segue, mas que não te seguem de volta (e não estão na lista de sempre seguir).
         const notFollowingBack = allFollowing.filter(followingAccount =>
