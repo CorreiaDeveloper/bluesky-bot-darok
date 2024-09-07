@@ -84,10 +84,6 @@ Para rodar este projeto, você precisará configurar as seguintes variáveis de 
 
 Certifique-se de preencher essas variáveis corretamente para garantir que o bot funcione conforme esperado.
 
-
-
-2. Lembre-se de .
-
 ## Uso
 
 Para iniciar o bot, execute:
