@@ -87,9 +87,13 @@ Certifique-se de preencher essas variáveis corretamente para garantir que o bot
 ## Uso
 
 Para iniciar o bot, execute:
-
 ```bash
 node index.js
+```
+ou
+
+```bash
+npm start
 ```
 
 ## Contribuição
