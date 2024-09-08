@@ -84,6 +84,9 @@ Para rodar este projeto, você precisará configurar as seguintes variáveis de 
 
 Certifique-se de preencher essas variáveis corretamente para garantir que o bot funcione conforme esperado.
 
+O bot também possui uma lista de palavras bloqueadas predefinidas na pasta badWords.
+Também faz um request para a [Date Muse API](https://www.datamuse.com/api/) para adicionar mais palavras para a lista de palavras bloqueadas (ENGLISH ONLY).
+
 ## Uso
 
 Para iniciar o bot, execute:
