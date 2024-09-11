@@ -1,10 +1,10 @@
-import { retryRequest } from '../utils/retryRequest.js';
 import dotenv from 'dotenv';
 dotenv.config();
 import { ComAtprotoSyncSubscribeRepos } from 'atproto-firehose';
 import { formatError } from '../utils/errorUtils.js';
 import { badEnglishWords, updateBadEnglishWords } from '../utils/badWords/getAndUpdateRelatedBadWords.js';
 import { badWords } from '../utils/badWords/badWordsList.js';
+import { likeQueue } from '../utils/likeQueue.js'; // Importa a fila de curtidas
 
 // Obter palavras e frases das variáveis de ambiente
 const unwantedWordsEnv = (process.env.UNWANTED_WORDS ?? '').split(',');
@@ -19,17 +19,15 @@ export const findPostsAndLikes = async (client, agent) => {
         // Combinar as palavras indesejadas do .env com as palavras do arquivo badWords.js
         const unwantedWordsFilter = [...new Set([...unwantedWordsEnv, ...badWords, ...badEnglishWords])];
 
-        let likedPostsCount = 0; // Variável para contar o número de posts curtidos globalmente
+        // Variável para contar o número de posts curtidos globalmente
+        let likedPostsCount = 0;
 
-        // Exibir a contagem inicial de posts curtidos
-        console.log(`Posts curtidos pelas palavras-chave: ${likedPostsCount}`);
-
-        client.on('message', (m) => {
+        client.on('message', async (m) => {
             if (ComAtprotoSyncSubscribeRepos.isCommit(m)) {
-                m.ops.forEach((op) => {
+                for (const op of m.ops) {
                     const payload = op.payload;
 
-                    if (!payload || payload.$type !== 'app.bsky.feed.post') return;
+                    if (!payload || payload.$type !== 'app.bsky.feed.post') continue;
 
                     // Convertendo o texto para minúsculo
                     const text = payload.text.toLowerCase();
@@ -39,25 +37,25 @@ export const findPostsAndLikes = async (client, agent) => {
 
                     // Verifica se o texto contém as UNWANTED_WORDS no arquivo .env + palavras do badWords.js
                     const containsUnwantedWords = unwantedWordsFilter.some(word => text.includes(word));
-                    // If the text contains required words and doesn't contain unwanted words
-                    // Dentro do seu loop ou onde os posts são processados:
+                    
+                    // Se o texto contém palavras obrigatórias e não contém palavras indesejadas
                     if (containsRequiredWords && !containsUnwantedWords) {
                         const uri = `at://${m.repo}/${op.path}`;
                         const cid = op.cid.toString();
 
-                        retryRequest(() => agent.like(uri, cid))
-                            .then(() => {
-                                // Incrementa a contagem de posts curtidos
+                        // Adiciona a curtida à fila e processa a fila
+                        likeQueue.addLike(uri, cid, async (uri, cid) => {
+                            try {
+                                await agent.like(uri, cid);
+                                // Incrementa a contagem de posts curtidos após confirmação de que a curtida foi realizada
                                 likedPostsCount++;
-
-                                // Atualiza a contagem no console
                                 console.log(`Posts curtidos pelas palavras-chave: ${likedPostsCount}`);
-                            })
-                            .catch(error => {
+                            } catch (error) {
                                 console.error(`Erro ao curtir o post ${uri}:`, formatError(error));
-                            });
+                            }
+                        });
                     }
-                });
+                }
             }
         });
 
