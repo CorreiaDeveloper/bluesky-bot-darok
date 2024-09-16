@@ -7,3 +7,4 @@
 
 ### Bug fixes
 ![Bug fixes 2024](https://img.shields.io/badge/2024-bugs-blue?style=for-the-badge&logoColor=white)
+- Correção em followService onde o mesmo estava realizando a contagem incorreta do total de contas seguidas desde o acionamento do bot
