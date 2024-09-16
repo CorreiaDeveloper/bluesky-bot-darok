@@ -133,6 +133,9 @@ git push origin minha-alteracao
         ```bash
         gh pr create --base main --head minha-alteracao --title "Título da Pull Request" --body "Descrição da Pull Request"
         ```
+
+## Changelog
+Veja todas as atualizações e correções no [CHANGELOG.md](CHANGELOG.md).
+
 ## Licença
-Este projeto está licenciado sob a MIT License. 
-[MIT](LICENSE)
+Este projeto está licenciado sob a [MIT](LICENSE) License. 
