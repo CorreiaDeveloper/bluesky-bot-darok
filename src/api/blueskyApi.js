@@ -1,8 +1,7 @@
 import { AtpAgent } from '@atproto/api';
-import { API_SERVICE_URL } from '../config/config.js';
 
 const agent = new AtpAgent({
-    service: API_SERVICE_URL
+    service: 'https://bsky.social'
 });
 
 export const login = async () => {

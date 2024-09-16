@@ -21,7 +21,7 @@ Este bot interage com a plataforma Bluesky para realizar ações automatizadas. 
 
 - **Autenticação:** Conecta-se à plataforma Bluesky usando credenciais.
 - **Seguir e Deixar de Seguir:** Gerencia seguidores e contas seguidas.
-- **Curtir Posts:** Interage com posts na plataforma.
+- **Curtir e Comentar Posts:** Interage com posts na plataforma.
 - **Registro e Monitoramento:** Gera logs detalhados e monitora interações.
 
 ## Pré-requisitos
@@ -135,4 +135,4 @@ git push origin minha-alteracao
         ```
 ## Licença
 Este projeto está licenciado sob a MIT License. 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](LICENSE)

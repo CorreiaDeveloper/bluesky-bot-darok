@@ -1,8 +1,8 @@
 // likeQueue.js
 
-import { LOGS, LIKE_INTERVAL } from '../config/config.js';
+import { DETAILED_LOGS, LIKE_INTERVAL_IN_SECONDS } from '../config/config.js';
 
-const LIKE_INTERVAL_MS = LIKE_INTERVAL * 1000; 
+const LIKE_INTERVAL_MS = LIKE_INTERVAL_IN_SECONDS * 1000; 
 
 class LikeQueue {
     constructor() {
@@ -13,14 +13,14 @@ class LikeQueue {
 
     addLike(uri, cid, action) {
         if (this.queue.length >= this.maxSize) {
-            if (LOGS)
+            if (DETAILED_LOGS)
                 console.log('Fila cheia. Aguardando processamento.');
             return;
         }
 
         this.queue.push({ uri, cid, action });
 
-        if (LOGS)
+        if (DETAILED_LOGS)
             console.log(`Item adicionado à fila. Tamanho atual da fila: ${this.queue.length}`);
 
         if (!this.isProcessing) {
@@ -33,7 +33,7 @@ class LikeQueue {
 
         while (this.queue.length > 0) {
             const { uri, cid, action } = this.queue.shift();
-            if (LOGS)
+            if (DETAILED_LOGS)
                 console.log(`Processando curtida. Tamanho atual da fila: ${this.queue.length}`);
 
             try {

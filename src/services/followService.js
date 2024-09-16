@@ -28,7 +28,7 @@ export async function findAndHandleNonMutualFollows(initialFollowerCount, initia
         }
 
         if (initialFollowingCount !== currentFollowingCount) {
-            const followingDifference = currentFollowerCount - initialFollowingCount;
+            const followingDifference = currentFollowingCount - initialFollowingCount;
             console.log(`Total de contas seguidas Atual: ${currentFollowingCount} - Total de contas seguidas: ${followingDifference} desde o início\n`);
         }
 
