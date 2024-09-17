@@ -1,17 +1,17 @@
-// likeQueue.js
+// replieQueue.js
 
-import { DETAILED_LOGS, LIKE_INTERVAL_IN_SECONDS } from '../config/config.js';
+import { DETAILED_LOGS, REPLIE_INTERVAL_IN_SECONDS } from '../../config/config.js';
 
-const LIKE_INTERVAL_MS = LIKE_INTERVAL_IN_SECONDS * 1000; 
+const REPLIE_INTERVAL_MS = REPLIE_INTERVAL_IN_SECONDS * 1000; 
 
-class LikeQueue {
+class ReplieQueue {
     constructor() {
         this.queue = [];
         this.maxSize = 10;
         this.isProcessing = false;
     }
 
-    addLike(uri, cid, action) {
+    addReplie(uri, cid, action) {
         if (this.queue.length >= this.maxSize) {
             if (DETAILED_LOGS)
                 console.log('Fila cheia. Aguardando processamento.');
@@ -34,16 +34,15 @@ class LikeQueue {
         while (this.queue.length > 0) {
             const { uri, cid, action } = this.queue.shift();
             if (DETAILED_LOGS)
-                console.log(`Processando curtida. Tamanho atual da fila: ${this.queue.length}`);
+                console.log(`Processando comentário. Tamanho atual da fila: ${this.queue.length}`);
 
             try {
                 await action(uri, cid);
             } catch (error) {
-                console.error(`Erro ao processar a curtida no post ${uri}:`, formatError(error));
+                console.error(`Erro ao processar a comentário no post ${uri}:`, formatError(error));
             }
 
-            // Aguarda 15 segundos antes de processar o próximo item
-            await this.sleep(LIKE_INTERVAL_MS);
+            await this.sleep(REPLIE_INTERVAL_MS);
         }
 
         this.isProcessing = false;
@@ -54,4 +53,4 @@ class LikeQueue {
     }
 }
 
-export const likeQueue = new LikeQueue();
+export const replieQueue = new ReplieQueue();

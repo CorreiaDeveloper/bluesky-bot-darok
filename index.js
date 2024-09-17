@@ -1,30 +1,30 @@
 import dotenv from 'dotenv';
 import agent, { login } from './src/api/blueskyApi.js';
 import { subscribeRepos } from 'atproto-firehose';
-import { findPostsAndLikes } from './src/services/likeService.js';
 import { findAndHandleNonMutualFollows, getAllFollowing, getAllFollowers } from './src/services/followService.js';
 import { formatError } from './src/utils/errorUtils.js';
-import { printAuthenticationMessage } from './src/utils/welcome.js'
+import { printAuthenticationMessage } from './src/utils/welcome.js';
+import { atprotoSubscribeRepos } from './src/utils/atprotoSubscribeRepos.js';  // Importa o handler de mensagens
 
 dotenv.config();
 
 async function initialize() {
     try {
-        await login(); // Garantir que estamos autenticados
+        await login();  // Garantir que estamos autenticados
         printAuthenticationMessage();
+
         // Obtendo seguidores e contas seguidas
         const Follower = await getAllFollowers();
         const Following = await getAllFollowing();
-
-        //Contagem de seguidores e seguidos
         const initialFollowerCount = Follower.length;
         const initialFollowingCount = Following.length;
 
-        // Log com a contagem de seguidores e contas seguidas
+        const intervalorEntreRequisicoes = process.env.INTERVAL_IN_MINUTES_BETWEEN_REQUESTS * 60 * 1000;  // minuto em milissegundos
+        const client = subscribeRepos("wss://bsky.network", { decodeRepoOps: true });
+
         console.log(`Iniciando bot com ${initialFollowerCount} seguidores e ${initialFollowingCount} seguidos`);
 
-        const intervalorEntreRequisicoes = process.env.INTERVAL_IN_MINUTES_BETWEEN_REQUESTS * 60 * 1000; // minuto em milissegundos
-
+        // Executa o processo de encontrar perfis que não seguem de volta periodicamente
         setInterval(async () => {
             try {
                 await findAndHandleNonMutualFollows(initialFollowerCount, initialFollowingCount);
@@ -33,8 +33,8 @@ async function initialize() {
             }
         }, intervalorEntreRequisicoes);
 
-        const client = subscribeRepos("wss://bsky.network", { decodeRepoOps: true });
-        findPostsAndLikes(client, agent);
+        // Processa curtidas e respostas a posts usando o handler de mensagens
+        atprotoSubscribeRepos(client, agent);
 
     } catch (error) {
         console.error('Erro durante a inicialização:', formatError(error));
