@@ -1,8 +1,7 @@
-// likeQueue.js
-
 import { DETAILED_LOGS, LIKE_INTERVAL_IN_SECONDS } from '../../config/config.js';
+import { updatePoints, canAddPoints, COST_POINTS_CREATE } from '../updatePoints.js'; // Ajuste o caminho conforme necessário
 
-const LIKE_INTERVAL_MS = LIKE_INTERVAL_IN_SECONDS * 1000; 
+const LIKE_INTERVAL_MS = LIKE_INTERVAL_IN_SECONDS * 1000;
 
 class LikeQueue {
     constructor() {
@@ -37,7 +36,12 @@ class LikeQueue {
                 console.log(`Processando curtida. Tamanho atual da fila: ${this.queue.length}`);
 
             try {
-                await action(uri, cid);
+                if (canAddPoints(COST_POINTS_CREATE)) {
+                    await action(uri, cid);
+                    updatePoints(COST_POINTS_CREATE); // Atualiza os pontos após a ação ser realizada
+                } else {
+                    console.log('Limite de pontos atingido. Aguardando reset.');
+                }
             } catch (error) {
                 console.error(`Erro ao processar a curtida no post ${uri}:`, formatError(error));
             }

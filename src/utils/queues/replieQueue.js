@@ -1,6 +1,8 @@
 // replieQueue.js
 
 import { DETAILED_LOGS, REPLIE_INTERVAL_IN_SECONDS } from '../../config/config.js';
+import { updatePoints, canAddPoints, COST_POINTS_CREATE } from '../updatePoints.js'; // Ajuste o caminho conforme necessário
+
 
 const REPLIE_INTERVAL_MS = REPLIE_INTERVAL_IN_SECONDS * 1000; 
 
@@ -36,10 +38,11 @@ class ReplieQueue {
             if (DETAILED_LOGS)
                 console.log(`Processando comentário. Tamanho atual da fila: ${this.queue.length}`);
 
-            try {
+            if (canAddPoints(COST_POINTS_CREATE)) {
                 await action(uri, cid);
-            } catch (error) {
-                console.error(`Erro ao processar a comentário no post ${uri}:`, formatError(error));
+                updatePoints(COST_POINTS_CREATE); // Atualiza os pontos após a ação ser realizada
+            } else {
+                console.log('Limite de pontos atingido. Aguardando reset.');
             }
 
             await this.sleep(REPLIE_INTERVAL_MS);
